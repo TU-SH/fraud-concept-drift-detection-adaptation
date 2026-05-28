@@ -1,12 +1,12 @@
 # 🔍 Adaptive Fraud Detection with Concept Drift Detection
 
-> **Portfolio Project** — Demonstrates concept drift detection & automated model adaptation for a Data Scientist / ML Engineer role in Australia.
+Demonstrates concept drift detection & automated model adaptation. 
 
 ---
 
-## 📋 Project Overview
+Project Overview
 
-Financial fraud patterns evolve over time — attackers change tactics, transaction amounts shift, and new fraud vectors emerge. A static ML model trained once and left to run will silently degrade as the real world drifts away from its training distribution.
+Financial fraud patterns evolve over time - Attackers change tactics, transaction amounts shift, and new fraud vectors emerge. A static ML model trained once and left to run will silently degrade as the real world drifts away from its training distribution.
 
 This project builds a **self-healing fraud detection system** that:
 
@@ -15,7 +15,7 @@ This project builds a **self-healing fraud detection system** that:
 3. **Explains** which features changed most using SHAP
 4. **Visualises** everything in a Streamlit dashboard
 
-### 🎯 Key Results
+**Key Results**
 
 | Metric        | Static Model | Adaptive Model | Improvement |
 |---------------|-------------|----------------|-------------|
@@ -27,7 +27,7 @@ This project builds a **self-healing fraud detection system** that:
 
 ---
 
-## 🗂️ Project Structure
+**Project Structure**
 
 ```
 fraud_drift_detection/
@@ -58,7 +58,7 @@ fraud_drift_detection/
 
 ---
 
-## 🚀 Quick Start
+**Quick Start Guide**
 
 ### 1. Install dependencies
 ```bash
