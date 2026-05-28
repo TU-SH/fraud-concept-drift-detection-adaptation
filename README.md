@@ -1,10 +1,10 @@
-# 🔍 Adaptive Fraud Detection with Concept Drift Detection
+**Adaptive Fraud Detection with Concept Drift Detection**
 
 Demonstrates concept drift detection & automated model adaptation. 
 
 ---
 
-Project Overview
+**Project Overview**
 
 Financial fraud patterns evolve over time - Attackers change tactics, transaction amounts shift, and new fraud vectors emerge. A static ML model trained once and left to run will silently degrade as the real world drifts away from its training distribution.
 
@@ -83,7 +83,7 @@ python -m pytest tests/ -v
 
 ---
 
-## 📊 Dataset
+**Dataset**
 
 A synthetic dataset with **40,000 transactions** across three temporal periods simulating realistic concept drift:
 
@@ -97,7 +97,7 @@ The dataset mimics the structure of the real-world [Kaggle Credit Card Fraud dat
 
 ---
 
-## 🔬 Drift Detection Methods
+**Drift Detection Methods**
 
 Three complementary detectors run in parallel:
 
@@ -118,7 +118,7 @@ Three complementary detectors run in parallel:
 
 ---
 
-## 🔄 Adaptive Retraining
+### Adaptive Retraining
 
 When any detector fires:
 1. The `AdaptiveRetrainer` accumulates recent samples in a **sliding window** (3,000 samples)
@@ -129,7 +129,7 @@ When any detector fires:
 
 ---
 
-## 🧠 SHAP Explainability
+## SHAP Explainability
 
 After the experiment, SHAP TreeExplainer identifies which features changed most between the pre-drift and post-drift models:
 
@@ -141,7 +141,7 @@ This is the **"explainable drift"** angle — not just detecting that drift happ
 
 ---
 
-## 🖥️ Dashboard Pages
+## Dashboard Pages (Streamlit)
 
 | Page                    | What it shows                                          |
 |-------------------------|-------------------------------------------------------|
@@ -153,7 +153,7 @@ This is the **"explainable drift"** angle — not just detecting that drift happ
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Component        | Tool/Library                        |
 |-----------------|-------------------------------------|
@@ -165,33 +165,4 @@ This is the **"explainable drift"** angle — not just detecting that drift happ
 | Testing          | pytest                              |
 | Data             | pandas, numpy, scikit-learn synthetic |
 
----
-
-## 📌 Interview Talking Points
-
-> **"How did you handle concept drift?"**
-> We run three drift detectors in parallel on the prediction error stream. When any detector fires, we retrain on a sliding window of recent data — no manual intervention needed. The system reduced ROC-AUC degradation from -0.29 to near-zero.
-
-> **"Why three detectors?"**
-> They complement each other: ADWIN is distribution-based and fast; DDM is error-rate-based and theoretically grounded; Page-Hinkley catches gradual mean shifts that the others might miss early.
-
-> **"How do you explain drift to a business stakeholder?"**
-> SHAP drift shift plots show exactly which features changed importance between model versions. In our case, `Amount` became 5× more important after drift — which translates to: "fraudsters are now targeting high-value transactions, not low-value ones."
-
----
-
-## 📄 References
-
-- Gama et al. (2004) — Learning with Drift Detection (DDM)
-- Bifet & Gavalda (2007) — Learning from Time-Changing Data with Adaptive Windowing (ADWIN)
-- Page (1954) — Continuous Inspection Schemes (Page-Hinkley)
-- Lu et al. (2018) — Learning under Concept Drift: A Review
-- SHAP: Lundberg & Lee (2017) — A Unified Approach to Interpreting Model Predictions
-
----
-
-## 👤 Author
-
-Built as a portfolio project targeting Data Scientist / ML Engineer roles in Australia (Banking, Fintech, Insurtech).
-
-Relevant to: CBA, ANZ, Westpac, Afterpay, Finder, Canva, REA Group, Atlassian data teams.
+-------------------------------------------------------------------------------------------------
