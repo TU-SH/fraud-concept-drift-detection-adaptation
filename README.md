@@ -166,3 +166,7 @@ This is the **"explainable drift"** angle — not just detecting that drift happ
 | Data             | pandas, numpy, scikit-learn synthetic |
 
 -------------------------------------------------------------------------------------------------
+
+## Algorithm Mechanics
+<img width="1440" height="400" alt="image" src="https://github.com/user-attachments/assets/b712824e-5406-448c-8a59-8e7318054e09" />
+
