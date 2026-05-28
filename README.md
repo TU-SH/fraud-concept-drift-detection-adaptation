@@ -155,19 +155,19 @@ This is the **"explainable drift"** angle — not just detecting that drift happ
 
 ## Tech Stack
 
-| Component        | Tool/Library                        |
-|-----------------|-------------------------------------|
-| ML Models        | XGBoost, scikit-learn, imbalanced-learn |
-| Drift Detection  | Custom ADWIN, DDM, Page-Hinkley (River-compatible) |
-| Explainability   | SHAP (TreeExplainer)                |
-| Dashboard        | Streamlit + Plotly                  |
-| Experiment Tracking | MLflow-ready structure           |
-| Testing          | pytest                              |
-| Data             | pandas, numpy, scikit-learn synthetic |
+| Component           | Tool/Library                                       |
+|---------------------|----------------------------------------------------|
+| ML Models           | XGBoost, scikit-learn, imbalanced-learn            |
+| Drift Detection     | Custom ADWIN, DDM, Page-Hinkley (River-compatible) |
+| Explainability      | SHAP (TreeExplainer)                               |
+| Dashboard           | Streamlit + Plotly                                 | 
+| Experiment Tracking | MLflow-ready structure                             |
+| Testing             | pytest                                             |
+| Data                | pandas, numpy, scikit-learn synthetic              |
 
 -------------------------------------------------------------------------------------------------
 
-## Algorithm Mechanics
+# Algorithm Mechanics
 
 Raw stream -------> XGBoost ---------------> Drift Detectors ------> Auto-train -------> SHAP
 
@@ -184,10 +184,73 @@ t=2    → transaction 3  (ATM withdrawal, $200.00)
 
 t=∞    → keeps flowing forever
 
-A **data stream** is this continuous, ordered sequence of transactions arriving in real time. The challenge is to make a fraud/not-fraud decision immediately. 
+A **data stream** is this continuous, ordered sequence of transactions arriving in real time. The challenge is to make a fraud/not-fraud decision immediately.  
 
 For this algorithm, we simulate streaming by splitting 40,000 transactions into 100 chunks of 400 using `get_streaming_chunks()`. Each chunk represents one batch of transactions arriving together — like one minute of activity at a bank.
 
+Our dataset is based on the famous Kaggle Credit Card Fraud dataset collected from European cardholders in September 2013 (https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)
+
+Our dataset has 32 columns: V1-V28, Amount, Class, Time, Period
+**V1-V28**: are the result of **PCA transformation** applied to the original transaction features. The bank applies PCA for privacy reasons. They cannot publish raw customer data publicly, but they can publish the mathematically transformed version which is anonymous. 
+
+So, what PCA (Principal Component Analysis) does - it takes the original features — merchant name, location, card type, customer age, device ID, IP address, etc. — and mathematically compresses them into a smaller set of numbers that capture the same information.
+
+<img width="1440" height="520" alt="image" src="https://github.com/user-attachments/assets/96188be6-9ed2-4255-81a9-f6e8ad6ee491" /> 
+
+where, 
+X = original feature vector (merchant, location, device, etc.)
+
+W = PCA weight matrix (learned from data)
+
+V = compressed feature vector [V1, V2, ... V28]
+
+Each Vᵢ is a weighted combination of ALL original features:
+
+V1 = w₁₁×merchant + w₁₂×age + w₁₃×device + ...
+
+V2 = w₂₁×merchant + w₂₂×age + w₂₃×device + ...
+
+...
+
+PCA orders the components so that V1 captures the most variance in the data, V2 the second most, and so on down to V28 which captures the least. This is why V1–V5 tend to be the strongest fraud predictors. So, even though we cannot see the original labels, we can infer what each group probably represents from the SHAP analysis: 
+
+| Feature        | Likely Represents                   | Fraud Signal                 |
+|----------------|-------------------------------------|-------------------------------
+| V1,V2,V3       | Transaction behaviour patterns      | Very strong - top predictors |
+| V4,V5,V6       | Merchant/local patterns             | Strong                       |
+| V7-V14         | Customer history patterns           | Moderate                     |
+| V15-V21        | Time/frequency patterns             | Weaker                       |
+| V22-V28        | Residual minor patterns             | Weakest                      |
+|----------------|-------------------------------------|------------------------------|
+
+**How concept drift affects the features** 
+The model learned "fraud looks like small amounts + pattern A" — but fraudsters changed tactics, so now "fraud looks like large amounts + pattern B" — the model is now blind to the new fraud. 
+
+Three types of drift
+
+### 1. Feature value drift — the raw values shift 
+Amount before:  fraud = ~$50
+
+Amount after:   fraud = ~$500
+
+→ The feature itself changed distribution
+
+### 2. Feature importance drift — a feature becomes useless or newly important 
+V21 before:  SHAP = 0.73  (very useful)
+
+V21 after:   SHAP = 0.02  (useless)
+
+→ The feature still exists but no longer predicts fraud
+
+### 3. Relationship drift — the direction of a feature flips
+V1 before:  high positive value → likely fraud
+
+V1 after:   high negative value → likely fraud
+
+→ The model's learned rule is now backwards
+
+
+#
 
 
 
