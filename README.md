@@ -168,5 +168,23 @@ This is the **"explainable drift"** angle — not just detecting that drift happ
 -------------------------------------------------------------------------------------------------
 
 ## Algorithm Mechanics
-<img width="1440" height="400" alt="image" src="https://github.com/user-attachments/assets/b712824e-5406-448c-8a59-8e7318054e09" />
+
+Raw stream -------> XGBoost ---------------> Drift Detectors ------> Auto-train -------> SHAP
+(V1-V28,Amount)     (predict fraud prob)     (ADWIN,DDM,PH)          (sliding window)    (explain drift)
+
+## Part 1: Data stream (raw)
+In the real world, a bank doesn't give you all transactions at once. They arrive one by one, continuously, like a river:
+
+t=0    → transaction 1  (card swipe at Woolworths, $23.50)
+t=1    → transaction 2  (online purchase, $340.00)
+t=2    → transaction 3  (ATM withdrawal, $200.00)
+...
+t=∞    → keeps flowing forever
+
+A **data stream** is this continuous, ordered sequence of transactions arriving in real time. The challenge is to make a fraud/not-fraud decision immediately. 
+
+For this algorithm, we simulate streaming by splitting 40,000 transactions into 100 chunks of 400 using `get_streaming_chunks()`. Each chunk represents one batch of transactions arriving together — like one minute of activity at a bank.
+
+
+
 
