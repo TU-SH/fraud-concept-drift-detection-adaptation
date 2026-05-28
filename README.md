@@ -1,10 +1,10 @@
-**Adaptive Fraud Detection with Concept Drift Detection**
+# Adaptive Fraud Detection with Concept Drift Detection
 
 Demonstrates concept drift detection & automated model adaptation. 
 
 ---
 
-**Project Overview**
+## Project Overview
 
 Financial fraud patterns evolve over time - Attackers change tactics, transaction amounts shift, and new fraud vectors emerge. A static ML model trained once and left to run will silently degrade as the real world drifts away from its training distribution.
 
@@ -15,7 +15,7 @@ This project builds a **self-healing fraud detection system** that:
 3. **Explains** which features changed most using SHAP
 4. **Visualises** everything in a Streamlit dashboard
 
-**Key Results**
+## Key Results
 
 | Metric        | Static Model | Adaptive Model | Improvement |
 |---------------|-------------|----------------|-------------|
@@ -27,7 +27,7 @@ This project builds a **self-healing fraud detection system** that:
 
 ---
 
-**Project Structure**
+## Project Structure
 
 ```
 fraud_drift_detection/
@@ -58,7 +58,7 @@ fraud_drift_detection/
 
 ---
 
-**Quick Start Guide**
+## Quick Start Guide
 
 ### 1. Install dependencies
 ```bash
@@ -83,7 +83,7 @@ python -m pytest tests/ -v
 
 ---
 
-**Dataset**
+## Dataset
 
 A synthetic dataset with **40,000 transactions** across three temporal periods simulating realistic concept drift:
 
@@ -97,7 +97,7 @@ The dataset mimics the structure of the real-world [Kaggle Credit Card Fraud dat
 
 ---
 
-**Drift Detection Methods**
+## Drift Detection Methods
 
 Three complementary detectors run in parallel:
 
@@ -167,11 +167,11 @@ This is the **"explainable drift"** angle — not just detecting that drift happ
 
 -------------------------------------------------------------------------------------------------
 
-# Algorithm Mechanics
+## Algorithm Mechanics
 
 Raw stream -------> XGBoost ---------------> Drift Detectors ------> Auto-train -------> SHAP
 
-## Part 1: Data stream (raw)
+### Part 1: Data stream (raw)
 In the real world, a bank doesn't give you all transactions at once. They arrive one by one, continuously, like a river:
 
 t=0    → transaction 1  (card swipe at Woolworths, $23.50)
@@ -223,7 +223,7 @@ PCA orders the components so that V1 captures the most variance in the data, V2 
 | V22-V28        | Residual minor patterns             | Weakest                      |
 |----------------|-------------------------------------|------------------------------|
 
-**How concept drift affects the features** 
+### How concept drift affects the features 
 The model learned "fraud looks like small amounts + pattern A" — but fraudsters changed tactics, so now "fraud looks like large amounts + pattern B" — the model is now blind to the new fraud. 
 
 Three types of drift
@@ -250,7 +250,15 @@ V1 after:   high negative value → likely fraud
 → The model's learned rule is now backwards
 
 
-#
+### Part 2: XGBoost Fraud Detection 
+XGBoost builds an ensemble of 200 decision trees sequentially, where each tree corrects the errors of the previous one.
+Each tree is trained on the residual errors of all previous trees combined: 
+
+final prediction: \[ p = \sigma\left( \sum \eta \cdot f_t(x) \right) \] 
+
+where, 
+
+
 
 
 
