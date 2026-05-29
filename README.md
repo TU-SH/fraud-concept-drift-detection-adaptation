@@ -472,7 +472,22 @@ Low importance before drift (~0.10). Moderate importance after drift (~0.30).
 
 **Interpretation**: New fraud patterns activated these previously dormant features.
 
-### 5. Feature importance - pre-drift model
+### 5. Feature importance - pre-drift model 
+
+<img width="1067" height="827" alt="shap_pre_drift" src="https://github.com/user-attachments/assets/b8508c65-4942-4d81-a5a7-2a572e7e7988" /> 
+
+In the original pre-drift model, importance is **spread evenly** across many features — V21 leads at 0.78, followed by V15 (0.44), V22 (0.43), V2 (0.34). `Amount` ranks 17th with only 0.127. This tells us the original fraud patterns were subtle combinations of many behavioural signals, not dominated by any single feature.
+
+### 6. Feature importance - post-drift retrained model
+
+<img width="1067" height="827" alt="shap_post_drift" src="https://github.com/user-attachments/assets/1b072af8-847f-4b96-9311-c7fab9899ddc" /> 
+
+After retraining on the new distribution, the feature landscape is completely different. `Amount` dominates at **5.05** — dwarfing every other feature. V12 (0.40), V11 (0.38), and V16 (0.36) are the next most important. All the features that dominated before (V21, V15, V22) have dropped to near zero.
+
+This is a classic concept drift signature: **a complete inversion of feature importance** driven by fraudsters changing their attack pattern. Without adaptive retraining, the model would keep looking for the old patterns while entirely missing the new ones — exactly what the static model's F1=0.02 confirms.
+
+
+
 
 
 
