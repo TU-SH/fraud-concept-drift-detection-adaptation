@@ -221,7 +221,7 @@ PCA orders the components so that V1 captures the most variance in the data, V2 
 | V7-V14         | Customer history patterns           | Moderate                     |
 | V15-V21        | Time/frequency patterns             | Weaker                       |
 | V22-V28        | Residual minor patterns             | Weakest                      |
-|----------------|-------------------------------------|------------------------------|
+
 
 ### How concept drift affects the features 
 The model learned "fraud looks like small amounts + pattern A" — but fraudsters changed tactics, so now "fraud looks like large amounts + pattern B" — the model is now blind to the new fraud. 
@@ -291,14 +291,23 @@ A transaction is flagged fraud when $p>0.5$.
 ### Part 3: Drift Detection
 All three detectors (ADWIN, DDM, Page-Hinkley) watch error stream e₁, e₂, e₃, … where eᵢ = 1 if prediction was wrong, 0 if correct. They answer the question: has the error rate changed significantly?
 
+**ADWIN (Adaptive windowing)** 
+
+Maintains a sliding window W and splits it into two sub-windows W₁ (old) and W₂ (new). Drift is declared when their error means differ beyond a statistically justified threshold:
+$$
+|\mu_{W_1} - \mu_{W_2}| \geq \sqrt{\dfrac{1}{2m} \ln \dfrac{4n}{\delta}}
+$$
+
+
 **why use three detectors** 
 Each one has a different failure mode. Running all three in parallel gives **redundancy**:
 
-| Detector      | Sensitive to                 | Blind to                 | Time complexity |
-|----------------|-------------------------------------|------------------------------------|
-| ADWIN      | Distribution shift in any window    | Very gradual drift |O(log n)            |
-| DDM       | Error rate climbing above its own minimum           | Seasonal oscillation |O(1)|
-| Page-Hinkley         | Persistent mean increase           | Temporary spikes  |O(1)         |
+
+| Detector (time complexity)       | Sensitive to                        | Blind to             |
+|----------------------------------|-------------------------------------|----------------------|
+| ADWIN O(logn)                    | Transaction behaviour patterns      | very gradual drifts  |
+| DDM O(1)                         | Merchant/local patterns             | seasonal oscillations|
+| Page-Hinkley O(1)                | Customer history patterns           | temporary spikes     |
 
 
 
