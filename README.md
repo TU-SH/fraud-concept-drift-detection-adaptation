@@ -385,9 +385,22 @@ $f(S)$ is model prediction using only the features in subset $S$
 
 ---
 
-### PUTTING ALL TOGETHER
+### Part 6: Putting it altogether
 
-<img width="940" height="377" alt="image" src="https://github.com/user-attachments/assets/de0ad016-03df-416b-bc2c-52bc0ffc704f" />
+<img width="1440" height="680" alt="image" src="https://github.com/user-attachments/assets/02f5431e-20df-476c-91fa-2e6646f6eb29" />
+
+## Results And Analysis
+
+### 1: Concept drift detection events
+
+<img width="1806" height="634" alt="drift_events_plot" src="https://github.com/user-attachments/assets/d516d07c-aa0f-49f7-b833-08f0ce7a8c89" />
+
+
+
+
+
+
+
 
 
 
