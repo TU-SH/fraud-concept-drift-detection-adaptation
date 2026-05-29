@@ -312,11 +312,43 @@ It tracks
 $p$ the current error rate
 $s$ the standard deviation given as $\sqrt{\frac{p(1-p)}{n}}$ 
 
+Along with, it also stores the minimum error rate seen so far $p_min$ and its corresponding standard deviation $s_min$.
 
+Drift is declared when:
+
+$$p + s > p_{\min} + 3 \times s_{\min}$$
+
+and warning is signaled when: 
+$$p + s > p_{\min} + 3 \times s_{\min}$$ 
+
+On drift detection: counters reset and retraining is triggered. As $n$ (number of examples seen since the last reset) grows, $s$ shrinks — making the test increasingly sensitive over time. 
+
+**Page-Hinkley**
+The Page-Hinkley Test is a CUSUM (Cumulative Sum) based drift detector. It monitors the cumulative deviation of the error rate from its running mean and is particularly effective at detecting gradual, persistent shifts.
+
+Exponential moving average (mean):
+
+$$\bar{x}_n = \alpha \times \bar{x}_{n-1} + (1 - \alpha) \times e_n$$
+
+Cumulative Sum:
+
+$$M_n = \max\left(0,\ M_{n-1} + e_n - \bar{x}_n - \delta\right)$$
+
+Drift Detection:
+
+$$M_n > \lambda$$ 
+
+Parameters
+
+$\alpha$ — smoothing factor  
+$\delta$ — minimum detectable change (tolerance)  
+$\lambda$ — detection threshold
+
+On drift detection, $M_n$ is reset to 0 and the model is retrained.
 
 
 **why use three detectors** 
-Each one has a different failure mode. Running all three in parallel gives **redundancy**:
+Each one has a different failure mode. Running all three in parallel gives **redundancy** - if one misses a subtle drift, another catches it.
 
 
 | Detector (time complexity)       | Sensitive to                        | Blind to             |
@@ -324,6 +356,39 @@ Each one has a different failure mode. Running all three in parallel gives **red
 | ADWIN O(logn)                    | Transaction behaviour patterns      | very gradual drifts  |
 | DDM O(1)                         | Merchant/local patterns             | seasonal oscillations|
 | Page-Hinkley O(1)                | Customer history patterns           | temporary spikes     |
+
+
+
+### Part 4: Adaptive retraining (sliding window)
+
+After drift, the old training data is poisonous — it teaches the model patterns that no longer exist. So, the model needs to be retrained on data from the new distribution.
+
+A buffer of fixed size $W$ samples is maintained. As new transactions arrive, they are added to the buffer. When the buffer exceeds $W$, the oldest samples are evicted. On drift detection, the model retrains exclusively on this buffer. 
+
+**NOTE**: In the algorithm, $W$ is set to 3000. This is because if $W$ is too small (say 200), it is not enough data to train a reliable model, especially with ~3% fraud rate meaning only ~6 fraud samples. on the other hand, if $W$ is too large (say 10,000), it will include too much stale pre-drift data, poisoning the retrained model. Hence, $W = 3000$ gives ~90 fraud samples which are enough for XGBoost while being fresh enough to represent the new distribution. 
+
+### Part 5: SHAP: Explainability
+
+SHAP (SHapley Additive exPlanations) answers the question: "which features drove this specific prediction, and by how much?"
+It comes from cooperative game theory — each feature is treated like a "player" in a team, and SHAP calculates each player's fair contribution to the final score (prediction). 
+
+**SHAP formula**
+$$\phi_i = \sum_{S \subseteq F \setminus \{i\}} \frac{|S|!(p - |S| - 1)!}{p!} \times \left[ f(S \cup \{i\}) - f(S) \right]$$
+
+where, 
+
+$\phi_i$ is SHAP value for feature $i$ (its contribution to the prediction)
+$F$ is set of all features (V1–V28 + Amount = 29 features)
+$S$ is any subset of features **not including** feature $i$
+$p$ is total number of features (29)
+$f(S)$ is model prediction using only the features in subset $S$
+
+---
+
+### PUTTING ALL TOGETHER
+
+<img width="940" height="377" alt="image" src="https://github.com/user-attachments/assets/de0ad016-03df-416b-bc2c-52bc0ffc704f" />
+
 
 
 
