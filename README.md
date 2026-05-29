@@ -357,6 +357,15 @@ Each one has a different failure mode. Running all three in parallel gives **red
 | DDM O(1)                         | Merchant/local patterns             | seasonal oscillations|
 | Page-Hinkley O(1)                | Customer history patterns           | temporary spikes     |
 
+**The analogy** 
+
+Think of three smoke detectors in the same room with different sensitivities:
+
+DDM = optical detector — responds instantly to sudden smoke
+
+ADWIN = heat detector — needs sustained temperature rise
+
+Page-Hinkley = CO detector — detects slow invisible buildup over time
 
 
 ### Part 4: Adaptive retraining (sliding window)
@@ -393,7 +402,25 @@ $f(S)$ is model prediction using only the features in subset $S$
 
 ### 1: Concept drift detection events
 
-<img width="1806" height="634" alt="drift_events_plot" src="https://github.com/user-attachments/assets/d516d07c-aa0f-49f7-b833-08f0ce7a8c89" />
+<img width="1806" height="634" alt="drift_events_plot" src="https://github.com/user-attachments/assets/d516d07c-aa0f-49f7-b833-08f0ce7a8c89" /> 
+
+The rolling error rate (window=150) stays near **0%** during the pre-drift period (samples 0–15,000) — the baseline model is working perfectly. At sample ~15,000, the error rate spikes sharply to **8.7%** as the post-drift fraud patterns arrive. DDM fires **5 times total** (purple dashed lines) — twice at the initial drift boundary (~15,000 and ~17,500) and three more times during the recovery period (~30,000–31,500) as patterns continue shifting. Each detection event triggers an automatic retraining. Notably, ADWIN and Page-Hinkley did not fire in this run. DDM was most sensitive to this particular error-rate style of drift, which is expected given that DDM is specifically designed for classification error monitoring.
+
+### 2. Static model vs adaptive model performance
+
+<img width="1806" height="1609" alt="performance_comparison" src="https://github.com/user-attachments/assets/3d0c911f-1cd5-46ff-94f0-13b1f36bb4be" />
+
+Three metrics tracked across all 100 chunks (40,000 samples):
+
+**F1 Score (top panel)**
+
+**Static model (red)**: holds near **0.93** during pre-drift, then **collapses to near 0** as soon as drift hits at chunk ~37. It never recovers — ending the post-drift period at F1 ≈ 0.02.
+
+**Adaptive model (blue)**: dips briefly at the drift boundary, then **recovers to ~1.0 within 2 chunks** after the first retrain (green dashed lines). Stays above 0.87 for the rest of the experiment. 
+
+
+
+
 
 
 
