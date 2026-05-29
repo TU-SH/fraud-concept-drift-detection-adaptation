@@ -294,9 +294,9 @@ All three detectors (ADWIN, DDM, Page-Hinkley) watch error stream e₁, e₂, e�
 **ADWIN (Adaptive windowing)** 
 
 Maintains a sliding window W and splits it into two sub-windows W₁ (old) and W₂ (new). Drift is declared when their error means differ beyond a statistically justified threshold:
-$$
-|\mu_{W_1} - \mu_{W_2}| \geq \sqrt{\dfrac{1}{2m} \ln \dfrac{4n}{\delta}}
-$$
+
+$$|\mu_{W_1} - \mu_{W_2}| \geq \sqrt{\dfrac{1}{2m} \ln \dfrac{4n}{\delta}}$$
+
 
 
 **why use three detectors** 
